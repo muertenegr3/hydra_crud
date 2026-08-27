@@ -3,12 +3,12 @@ package com.example.hydra_Crud.app.Entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "familiares")
-public class Familiar {
+@Table(name = "empleados_farmacia")
+public class EmpleadosFarmacia {
 
     @Id
-    @Column(name = "run", length = 12)
-    private String run;
+    @Column(name = "run_ef", length = 12)
+    private String runEf;
 
     @Column(name = "nombre", length = 20)
     private String nombre;
@@ -19,21 +19,18 @@ public class Familiar {
     @Column(name = "apellido_paterno", length = 20)
     private String apellidoPaterno;
 
-    @Column(name = "correo", length = 100)
+    @Column(name = "correo", length = 50)
     private String correo;
 
-    @Column(name = "password", length = 100)
+    @Column(name = "password", length = 50)
     private String password;
 
-    @Column(name = "genero", length = 1)
-    private String genero;
+    @Column(name = "farmacias_id_farmacias")
+    private Integer farmaciasIdFarmacias;
 
-    @Column(name = "edad")
-    private Integer edad;
-
-    public String getRun() { return run; }
-    public void setRun(String run) {
-        this.run = run != null ? run.toLowerCase().trim() : null;
+    public String getRunEf() { return runEf; }
+    public void setRunEf(String runEf) {
+        this.runEf = runEf != null ? runEf.toLowerCase().trim() : null;
     }
 
     public String getNombre() { return nombre; }
@@ -61,13 +58,8 @@ public class Familiar {
         this.password = password;
     }
 
-    public String getGenero() { return genero; }
-    public void setGenero(String genero) {
-        this.genero = genero != null ? genero.toUpperCase().trim() : null;
-    }
-
-    public Integer getEdad() { return edad; }
-    public void setEdad(Integer edad) {
-        this.edad = (edad != null && edad > 0) ? edad : null;
+    public Integer getFarmaciasIdFarmacias() { return farmaciasIdFarmacias; }
+    public void setFarmaciasIdFarmacias(Integer farmaciasIdFarmacias) {
+        this.farmaciasIdFarmacias = farmaciasIdFarmacias;
     }
 }
