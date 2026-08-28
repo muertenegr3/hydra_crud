@@ -31,6 +31,9 @@ public class Familiar {
     @Column(name = "edad")
     private Integer edad;
 
+    @Column(name = "telefono", length = 1000)
+    private String telefono;
+
     public String getRun() { return run; }
     public void setRun(String run) {
         this.run = run != null ? run.toLowerCase().trim() : null;
@@ -69,5 +72,10 @@ public class Familiar {
     public Integer getEdad() { return edad; }
     public void setEdad(Integer edad) {
         this.edad = (edad != null && edad > 0) ? edad : null;
+    }
+
+    public String getTelefono() { return telefono; }
+    public void setTelefono(String telefono) {
+        this.telefono = telefono != null ? telefono.trim() : null;
     }
 }
