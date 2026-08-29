@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.hydra_Crud.app.Entity.Familiar;
 import com.example.hydra_Crud.app.Entity.Paciente;
 import com.example.hydra_Crud.app.Repository.PacienteRepository;
 
@@ -29,6 +30,12 @@ public class PacienteController {
         return pacienteRepository.findById(run)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    // ✅ GET FAMILIARES DE UN PACIENTE
+    @GetMapping("/{run}/familiares")
+    public List<Familiar> obtenerFamiliaresDePaciente(@PathVariable String run) {
+        return pacienteRepository.findFamiliaresByPacienteRun(run);
     }
 
     // ✅ POST (CREAR)
