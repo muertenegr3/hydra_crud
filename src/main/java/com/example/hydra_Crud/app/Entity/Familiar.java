@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 public class Familiar {
 
     @Id
-    @Column(name = "run", length = 12)
+    @Column(name = "run", length = 1000)
     private String run;
 
     @Column(name = "nombre", length = 20)
@@ -19,10 +19,10 @@ public class Familiar {
     @Column(name = "apellido_paterno", length = 20)
     private String apellidoPaterno;
 
-    @Column(name = "correo", length = 100)
+    @Column(name = "correo", length = 1000)
     private String correo;
 
-    @Column(name = "password", length = 100)
+    @Column(name = "password", length = 1000)
     private String password;
 
     @Column(name = "genero", length = 1)
