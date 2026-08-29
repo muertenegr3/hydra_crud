@@ -8,7 +8,7 @@ import jakarta.persistence.*;
 public class FamiliarPaciente {
 
     @Id
-    @Column(name = "pacientes_run_p", length = 1000)
+    @Column(name = "paciente_run_p", length = 1000)
     private String pacientesRunP;
 
     @Id
