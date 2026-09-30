@@ -8,9 +8,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RepositoryRestResource(path = "bpm")
-public interface BpmRepository extends JpaRepository<Bpm, Long> {
-    List<Bpm> findByRunPAndFechaBetween(
-            String runP,
-            LocalDateTime inicio,
-            LocalDateTime fin);
+public interface BpmRepository extends JpaRepository<Bpm, String> {
+    List<Bpm> findByFechaBetween(LocalDateTime inicio, LocalDateTime fin);
 }

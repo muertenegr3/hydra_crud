@@ -1,28 +1,50 @@
 package com.example.hydra_Crud.app.Entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "historial_geolocalizacion")
 public class HistorialGeolocalizacion {
 
     @Id
-    @Column(name = "run_p")
-    private Integer runP;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @Column(name = "run_p", length = 1000)
+    private String runP;
 
     @Column(name = "fecha")
-    private LocalDate fecha;
+    private LocalDateTime fecha;
 
     @Column(name = "hora")
-    private LocalDate hora;
+    private LocalTime hora;
 
-    public Integer getRunP() { return runP; }
-    public void setRunP(Integer runP) { this.runP = runP; }
+    @Column(name = "latitud")
+    private Double latitud;
 
-    public LocalDate getFecha() { return fecha; }
-    public void setFecha(LocalDate fecha) { this.fecha = fecha; }
+    @Column(name = "longitud")
+    private Double longitud;
 
-    public LocalDate getHora() { return hora; }
-    public void setHora(LocalDate hora) { this.hora = hora; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getRunP() { return runP; }
+    public void setRunP(String runP) {
+        this.runP = runP != null ? runP.toLowerCase().trim() : null;
+    }
+
+    public LocalDateTime getFecha() { return fecha; }
+    public void setFecha(LocalDateTime fecha) { this.fecha = fecha; }
+
+    public LocalTime getHora() { return hora; }
+    public void setHora(LocalTime hora) { this.hora = hora; }
+
+    public Double getLatitud() { return latitud; }
+    public void setLatitud(Double latitud) { this.latitud = latitud; }
+
+    public Double getLongitud() { return longitud; }
+    public void setLongitud(Double longitud) { this.longitud = longitud; }
 }

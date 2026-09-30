@@ -1,7 +1,7 @@
 package com.example.hydra_Crud.app.Entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "historial_bpm")
@@ -12,17 +12,17 @@ public class HistorialBpm {
     @Column(name = "id_historial_bpm")
     private Long idHistorialBpm;
 
-    @Column(name = "run_p", length = 12)
+    @Column(name = "run_p", length = 1000)
     private String runP;
 
     @Column(name = "valor_bpm")
     private Integer valorBpm;
 
-    @Column(name = "fecha")
-    private LocalDate fecha;
+    @Column(name = "spo2")
+    private Integer spo2;
 
-    @Column(name = "hora")
-    private LocalDate hora;
+    @Column(name = "fecha")
+    private LocalDateTime fecha;
 
     public Long getIdHistorialBpm() { return idHistorialBpm; }
     public void setIdHistorialBpm(Long idHistorialBpm) { this.idHistorialBpm = idHistorialBpm; }
@@ -35,9 +35,9 @@ public class HistorialBpm {
     public Integer getValorBpm() { return valorBpm; }
     public void setValorBpm(Integer valorBpm) { this.valorBpm = valorBpm; }
 
-    public LocalDate getFecha() { return fecha; }
-    public void setFecha(LocalDate fecha) { this.fecha = fecha; }
+    public Integer getSpo2() { return spo2; }
+    public void setSpo2(Integer spo2) { this.spo2 = spo2; }
 
-    public LocalDate getHora() { return hora; }
-    public void setHora(LocalDate hora) { this.hora = hora; }
+    public LocalDateTime getFecha() { return fecha; }
+    public void setFecha(LocalDateTime fecha) { this.fecha = fecha; }
 }

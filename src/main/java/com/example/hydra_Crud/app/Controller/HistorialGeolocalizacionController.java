@@ -22,9 +22,9 @@ public class HistorialGeolocalizacionController {
         return repository.findAll();
     }
 
-    @GetMapping("/{runP}")
-    public ResponseEntity<HistorialGeolocalizacion> obtenerPorRun(@PathVariable Integer runP) {
-        return repository.findById(runP)
+    @GetMapping("/{id}")
+    public ResponseEntity<HistorialGeolocalizacion> obtenerPorId(@PathVariable Long id) {
+        return repository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -35,12 +35,12 @@ public class HistorialGeolocalizacionController {
         return ResponseEntity.status(201).body(nuevo);
     }
 
-    @DeleteMapping("/{runP}")
-    public ResponseEntity<Void> eliminar(@PathVariable Integer runP) {
-        if (!repository.existsById(runP)) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        if (!repository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
-        repository.deleteById(runP);
+        repository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }

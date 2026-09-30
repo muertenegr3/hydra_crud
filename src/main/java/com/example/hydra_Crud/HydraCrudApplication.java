@@ -2,6 +2,7 @@ package com.example.hydra_Crud;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @EntityScan("com.example.hydra_Crud.app.Entity")
 @EnableJpaRepositories("com.example.hydra_Crud.app.Repository")
+@EnableScheduling
 public class HydraCrudApplication {
 
 	public static void main(String[] args) {

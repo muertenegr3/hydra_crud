@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.hydra_Crud.app.Entity.Mensaje;
 import com.example.hydra_Crud.app.Repository.MensajeRepository;
+import com.example.hydra_Crud.app.Services.EncryptionService;
+import com.example.hydra_Crud.app.Utils.HashUtils;
 
 @RestController
 @RequestMapping("/api/mensajes")
@@ -20,14 +22,43 @@ public class MensajeController {
     @Autowired
     private MensajeRepository repository;
 
+    @Autowired
+    private EncryptionService encryptionService;
+
     /**
      * Crear mensaje. El INSERT dispara postgres_changes en Supabase Realtime,
      * el bridge lo reenvia por SSE a todos los clientes conectados.
+     *
      * Body (JSON): remitenteRun, rolOrigen, destinatarioRun, rolDestino,
-     *              contenido, adjuntoUrl?, adjuntoNombre?
+     *              contenido?, adjuntoUrl?, adjuntoNombre?
+     *
+     * El cliente envia el RUN en texto plano por HTTPS. Aqui se cifra en reposo
+     * y se guarda el SHA-256 para que las consultas y el SSE puedan filtrar.
+     * A partir de ahora la respuesta NO incluye el RUN: solo su hash.
      */
     @PostMapping
-    public ResponseEntity<Mensaje> crear(@RequestBody Mensaje mensaje) {
+    public ResponseEntity<?> crear(@RequestBody Mensaje mensaje) {
+        if (mensaje.getRemitenteRun() == null || mensaje.getRemitenteRun().isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Falta remitenteRun"));
+        }
+        if (mensaje.getDestinatarioRun() == null || mensaje.getDestinatarioRun().isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Falta destinatarioRun"));
+        }
+        boolean sinTexto = mensaje.getContenido() == null || mensaje.getContenido().isBlank();
+        boolean sinFoto = mensaje.getAdjuntoUrl() == null || mensaje.getAdjuntoUrl().isBlank();
+        if (sinTexto && sinFoto) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "El mensaje debe tener texto o una foto adjunta"));
+        }
+
+        String remitentePlano = mensaje.getRemitenteRun();
+        String destinatarioPlano = mensaje.getDestinatarioRun();
+
+        mensaje.setRemitenteRunHash(HashUtils.HASHEO(remitentePlano));
+        mensaje.setDestinatarioRunHash(HashUtils.HASHEO(destinatarioPlano));
+        mensaje.setRemitenteRun(encryptionService.encriptarRobusto(remitentePlano));
+        mensaje.setDestinatarioRun(encryptionService.encriptarRobusto(destinatarioPlano));
+
         mensaje.setId(null);
         mensaje.setLeido(false);
         mensaje.setLeidoEn(null);
@@ -36,19 +67,23 @@ public class MensajeController {
         return ResponseEntity.status(201).body(nuevo);
     }
 
-    /** Historial de una conversacion 1:1: ?runA=..&runB=.. */
+    /** Historial de una conversacion 1:1: ?runA=..&runB=.. (RUN en texto plano). */
     @GetMapping("/conversacion")
     public ResponseEntity<List<Mensaje>> conversacion(@RequestParam String runA,
                                                       @RequestParam String runB) {
-        List<Mensaje> historial = repository.conversacion(runA, runB);
+        List<Mensaje> historial = repository.conversacion(
+                HashUtils.HASHEO(runA), HashUtils.HASHEO(runB));
         return ResponseEntity.ok(historial);
     }
 
-    /** Badge de notificaciones: ?destinoRun=..&rolDestino=cuidador|medico */
+    /** Badge de notificaciones: ?destinoRun=..&rolDestino=cuidador|medico (RUN en texto plano). */
     @GetMapping("/no-leidos")
-    public List<Mensaje> noLeidos(@RequestParam String destinoRun,
-                                  @RequestParam String rolDestino) {
-        return repository.noLeidos(destinoRun, rolDestino);
+    public ResponseEntity<?> noLeidos(@RequestParam String destinoRun,
+                                      @RequestParam String rolDestino) {
+        if (destinoRun == null || destinoRun.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Falta destinoRun"));
+        }
+        return ResponseEntity.ok(repository.noLeidos(HashUtils.HASHEO(destinoRun), rolDestino));
     }
 
     /** Marca un mensaje como leido: PATCH /api/mensajes/{id}/leer */
