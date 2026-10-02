@@ -35,10 +35,10 @@ public class CleanupService {
     private static final ObjectMapper mapper = new ObjectMapper();
 
     @Value("${supabase.s3.endpoint}") private String endpoint;
-    @Value("${supabase.s3.region}") private String region;
+    @Value("${supabase.s3.region:us-west-2}") private String region;
     @Value("${supabase.s3.access-key}") private String accessKey;
     @Value("${supabase.s3.secret-key}") private String secretKey;
-    @Value("${supabase.bucket}") private String bucket;
+    @Value("${supabase.bucket:Pacientes}") private String bucket;
 
     @Autowired private HistorialBpmRepository historialBpmRepo;
     @Autowired private HistorialGeolocalizacionRepository historialGeoRepo;
