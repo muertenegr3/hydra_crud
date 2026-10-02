@@ -8,10 +8,11 @@ import java.time.LocalDateTime;
  * Mensaje 1:1 entre paciente/familiar y cuidador/medico.
  * Realtime: la tabla "mensajes" se agrega a la publicación supabase_realtime.
  *
- * remitente_run / destinatario_run guardan el RUN CIFRADO (AES, no reversible
- * fuera del servidor). Como el cifrado es no determinista, no sirven para
- * filtrar: las columnas *_run_hash guardan el SHA-256 determinista y son las
- * que usan el repositorio, el badge de no-leídos y el matching por SSE.
+ * remitente_run / destinatario_run guardan el SHA-256 del RUN, calculado por
+ * HashUtils.HASHEO() (minusculas, sin puntos ni espacios). Como el hash es
+ * determinista, las mismas columnas sirven para guardar la identidad y para
+ * filtrar: el repositorio, el badge de no-leidos y el matching por SSE comparan
+ * contra el hash, nunca contra el RUN en texto plano.
  */
 @Entity
 @Table(name = "mensajes")
@@ -21,20 +22,14 @@ public class Mensaje {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "remitente_run", nullable = false, length = 500)
+    @Column(name = "remitente_run", nullable = false, length = 64)
     private String remitenteRun;
-
-    @Column(name = "remitente_run_hash", length = 64)
-    private String remitenteRunHash;
 
     @Column(name = "rol_origen", nullable = false, length = 20)
     private String rolOrigen;
 
-    @Column(name = "destinatario_run", nullable = false, length = 500)
+    @Column(name = "destinatario_run", nullable = false, length = 64)
     private String destinatarioRun;
-
-    @Column(name = "destinatario_run_hash", length = 64)
-    private String destinatarioRunHash;
 
     @Column(name = "rol_destino", nullable = false, length = 20)
     private String rolDestino;
@@ -60,15 +55,12 @@ public class Mensaje {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    // WRITE_ONLY (no @JsonIgnore): el cliente SÍ envía el RUN plano en el POST,
-    // pero el ciphertext NUNCA se serializa hacia fuera. @JsonIgnore bloquearía
+    // WRITE_ONLY (no @JsonIgnore): el cliente envía el RUN plano en el POST,
+    // pero el hash NUNCA se serializa hacia fuera. @JsonIgnore bloquearía
     // también la deserialización y el remitenteRun llegaría null.
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public String getRemitenteRun() { return remitenteRun; }
     public void setRemitenteRun(String remitenteRun) { this.remitenteRun = remitenteRun; }
-
-    public String getRemitenteRunHash() { return remitenteRunHash; }
-    public void setRemitenteRunHash(String remitenteRunHash) { this.remitenteRunHash = remitenteRunHash; }
 
     public String getRolOrigen() { return rolOrigen; }
     public void setRolOrigen(String rolOrigen) { this.rolOrigen = rolOrigen; }
@@ -76,9 +68,6 @@ public class Mensaje {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public String getDestinatarioRun() { return destinatarioRun; }
     public void setDestinatarioRun(String destinatarioRun) { this.destinatarioRun = destinatarioRun; }
-
-    public String getDestinatarioRunHash() { return destinatarioRunHash; }
-    public void setDestinatarioRunHash(String destinatarioRunHash) { this.destinatarioRunHash = destinatarioRunHash; }
 
     public String getRolDestino() { return rolDestino; }
     public void setRolDestino(String rolDestino) { this.rolDestino = rolDestino; }

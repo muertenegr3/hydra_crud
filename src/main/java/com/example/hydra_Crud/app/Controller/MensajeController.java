@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.hydra_Crud.app.Entity.Mensaje;
 import com.example.hydra_Crud.app.Repository.MensajeRepository;
-import com.example.hydra_Crud.app.Services.EncryptionService;
 import com.example.hydra_Crud.app.Utils.HashUtils;
 
 @RestController
@@ -22,9 +21,6 @@ public class MensajeController {
     @Autowired
     private MensajeRepository repository;
 
-    @Autowired
-    private EncryptionService encryptionService;
-
     /**
      * Crear mensaje. El INSERT dispara postgres_changes en Supabase Realtime,
      * el bridge lo reenvia por SSE a todos los clientes conectados.
@@ -32,9 +28,10 @@ public class MensajeController {
      * Body (JSON): remitenteRun, rolOrigen, destinatarioRun, rolDestino,
      *              contenido?, adjuntoUrl?, adjuntoNombre?
      *
-     * El cliente envia el RUN en texto plano por HTTPS. Aqui se cifra en reposo
-     * y se guarda el SHA-256 para que las consultas y el SSE puedan filtrar.
-     * A partir de ahora la respuesta NO incluye el RUN: solo su hash.
+     * El cliente envia el RUN en texto plano por HTTPS. Aqui se reemplaza por su
+     * SHA-256 antes de tocar la base, de modo que el RUN nunca queda almacenado
+     * y las consultas pueden filtrar por equality (el hash es determinista).
+     * La respuesta NO incluye el RUN ni su hash (WRITE_ONLY en la entidad).
      */
     @PostMapping
     public ResponseEntity<?> crear(@RequestBody Mensaje mensaje) {
@@ -54,10 +51,8 @@ public class MensajeController {
         String remitentePlano = mensaje.getRemitenteRun();
         String destinatarioPlano = mensaje.getDestinatarioRun();
 
-        mensaje.setRemitenteRunHash(HashUtils.HASHEO(remitentePlano));
-        mensaje.setDestinatarioRunHash(HashUtils.HASHEO(destinatarioPlano));
-        mensaje.setRemitenteRun(encryptionService.encriptarRobusto(remitentePlano));
-        mensaje.setDestinatarioRun(encryptionService.encriptarRobusto(destinatarioPlano));
+        mensaje.setRemitenteRun(HashUtils.HASHEO(remitentePlano));
+        mensaje.setDestinatarioRun(HashUtils.HASHEO(destinatarioPlano));
 
         mensaje.setId(null);
         mensaje.setLeido(false);
