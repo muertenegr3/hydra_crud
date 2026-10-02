@@ -85,6 +85,13 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
+
+		<!-- Carga un .env local como PropertySource (solo desarrollo) -->
+		<dependency>
+			<groupId>me.paulschwarz</groupId>
+			<artifactId>springboot4-dotenv</artifactId>
+			<version>5.1.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

@@ -56,8 +56,11 @@ public class Mensaje {
     public void setId(Long id) { this.id = id; }
 
     // WRITE_ONLY (no @JsonIgnore): el cliente envía el RUN plano en el POST,
-    // pero el hash NUNCA se serializa hacia fuera. @JsonIgnore bloquearía
-    // también la deserialización y el remitenteRun llegaría null.
+    // pero el hash NUNCA se serializa en las respuestas REST. @JsonIgnore
+    // bloquearía también la deserialización y el remitenteRun llegaría null.
+    // OJO: esto solo afecta a las respuestas REST. El evento SSE lo arma el
+    // bridge reenviando el JSON crudo de Postgres (RealtimeBridgeService), sin
+    // pasar por Jackson, asi que ahi el hash si viaja como remitente_run.
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public String getRemitenteRun() { return remitenteRun; }
     public void setRemitenteRun(String remitenteRun) { this.remitenteRun = remitenteRun; }
